@@ -39,5 +39,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "antd": "^5.4.7",
+    "react-hook-form": "^7.43.9",
+    "react-router-dom": "^6.11.1"
   }
 }

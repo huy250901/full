@@ -1,42 +1,16 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import {
-  ILoginFormValues,
-  ILoginParams,
-  ILoginValidation,
-} from "../models/auth";
-import {
-  LockOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Button, Form, Input, Select, Space } from "antd";
-import {
-  Link,
-  useNavigate,
-  NavLink,
-} from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+
+import { Button, Form, Input, Select, notification, Space } from "antd";
+import { Link, useNavigate, NavLink, Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 import "./loginform.css";
 
 const LoginForm = () => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ILoginFormValues>({
-    defaultValues: { username: "", password: "" },
-  });
-
   const [company, setCompany] = useState<Array<any>>([]);
 
   useEffect(() => {
-    fetch(
-      "https://api-training.hrm.div4.pgtest.co/api/v1/company"
-    )
+    fetch("https://api-training.hrm.div4.pgtest.co/api/v1/company")
       .then((response) => response.json())
       .then((data) => {
         setCompany(data.data);
@@ -46,7 +20,7 @@ const LoginForm = () => {
       });
   }, []);
 
-  const navigate = useNavigate();
+  let navigate = useNavigate();
 
   const [loading, setLoadings] = useState<boolean[]>([]);
 
@@ -62,9 +36,7 @@ const LoginForm = () => {
     let error;
     if (!value) {
       error = "Vui lòng nhập email";
-    } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)
-    ) {
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)) {
       error = "Email không hợp lệ";
     }
     return error;
@@ -82,44 +54,48 @@ const LoginForm = () => {
     return error;
   };
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     console.log("Success:", values);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  const onSubmit = async (data: ILoginFormValues) => {
     try {
       const response = await fetch(
         "https://api-training.hrm.div4.pgtest.co/api/v1/login",
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          method: "POST",
           body: JSON.stringify({
-            username: data.username,
-            password: data.password,
+            username: values.username,
+            password: values.password,
+            company_id: values.factory,
           }),
         }
       );
+      const result = await response.json();
 
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log(responseData);
-        // Do something with the response data
+      if (result.message === "Success") {
+        const token = result.data.token;
+        Cookies.set("token", token, { expires: 7 });
+        notification.success({
+          message: "Login successful",
+          description: "Welcome back!",
+        });
+        navigate("/home");
       } else {
-        console.error(
-          "Error calling API: ",
-          response.status,
-          response.statusText
-        );
+        console.log("error");
+
+        notification.error({
+          message: "Login failed",
+          description: result.message,
+        });
       }
     } catch (error) {
       console.error("Error calling API: ", error);
     }
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log("Failed:", errorInfo);
   };
 
   return (
@@ -131,64 +107,17 @@ const LoginForm = () => {
         padding: "24px",
       }}
     >
-      {/* <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="form"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          alignItems: "center",
-        }}
-      > */}
-      {/* <div>
-          <div style={{ display: "flex", marginBottom: "12px" }}>
-            Username :
-          </div>
-          <Controller
-            name="username"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: true,
-              validate: {
-                emailValue: (value) => validateEmail(value),
-              },
-            }}
-            render={({ field }) => <input className="input-login" {...field} />}
-          />
-          {errors.username && (
-            <small className="text-danger">{errors.username.message}</small>
-          )}
-        </div> */}
-      {/* <div style={{ marginTop: "20px" }}>
-          <div style={{ display: "flex", marginBottom: "12px" }}>
-            Password :
-          </div>
-          <Controller
-            name="password"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: true,
-              validate: {
-                minLength: (value) => validatePassword(value),
-              },
-            }}
-            render={({ field }) => (
-              <input className="input-login" type="password" {...field} />
-            )}
-          />
-          {errors.password && (
-            <small className="text-danger">{errors.password.message}</small>
-          )}
-        </div> */}
-
       <Form
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
+        style={{
+          maxWidth: 600,
+          padding: "24px",
+          backgroundColor: "#fff",
+          borderRadius: "6px",
+          boxShadow: "2px 1px 5px rgb(0 0 0 / 18%)",
+        }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -220,23 +149,12 @@ const LoginForm = () => {
           <Input.Password />
         </Form.Item>
         <div>
-          {/* <div
-            style={{
-              display: "flex",
-              width: "296px",
-              marginBottom: "12px",
-            }}
-          >
-            Factory
-          </div> */}
           <Form.Item label="Factory">
             <Space.Compact>
               <Form.Item
                 name="factory"
                 noStyle
-                rules={[
-                  { required: true, message: "Please" },
-                ]}
+                rules={[{ required: true, message: "Please" }]}
               >
                 <Select
                   placeholder="Select Factory"
@@ -281,14 +199,11 @@ const LoginForm = () => {
             }}
           >
             <Link to="/reset-password">
-              <button className="btn_fg">
-                Forgot Your Password?
-              </button>
+              <button className="btn_fg">Forgot Your Password?</button>
             </Link>
           </div>
         </div>
       </Form>
-      {/* </form> */}
     </div>
   );
 };

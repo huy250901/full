@@ -11,7 +11,7 @@ const LoginPage = () => {
     <div
       className="container"
       style={{
-        marginTop: "50px",
+        backgroundColor: "#f8f9fa",
         height: "100vh",
         display: "flex",
         alignItems: "center",

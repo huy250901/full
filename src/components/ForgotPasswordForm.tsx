@@ -120,10 +120,16 @@ const ForgotPassword = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="form"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          alignItems: "center",
+          maxWidth: 600,
+          padding: "24px",
+          backgroundColor: "#fff",
+          borderRadius: "6px",
+          boxShadow: "2px 1px 5px rgb(0 0 0 / 18%)",
+
+          // display: "flex",
+          // flexDirection: "column",
+          // gap: "10px",
+          // alignItems: "center",
         }}
       >
         <div>

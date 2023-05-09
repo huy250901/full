@@ -1,20 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   ILoginFormValues,
   ILoginParams,
   ILoginValidation,
 } from "../models/auth";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  LockOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Button, Form, Input, Select, Space } from "antd";
-import { Link, useNavigate, NavLink } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  NavLink,
+} from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 
 import "./loginform.css";
-// interface Props {
-//   onLogin(values: ILoginParams): void;
-//   loadingg: boolean;
-//   errorMessage: string;
-// }
 
 const LoginForm = () => {
   const {
@@ -28,7 +34,9 @@ const LoginForm = () => {
   const [company, setCompany] = useState<Array<any>>([]);
 
   useEffect(() => {
-    fetch("https://api-training.hrm.div4.pgtest.co/api/v1/company")
+    fetch(
+      "https://api-training.hrm.div4.pgtest.co/api/v1/company"
+    )
       .then((response) => response.json())
       .then((data) => {
         setCompany(data.data);
@@ -36,7 +44,7 @@ const LoginForm = () => {
       .catch((error) => {
         console.log(error);
       });
-  });
+  }, []);
 
   const navigate = useNavigate();
 
@@ -54,7 +62,9 @@ const LoginForm = () => {
     let error;
     if (!value) {
       error = "Vui lòng nhập email";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)) {
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)
+    ) {
       error = "Email không hợp lệ";
     }
     return error;
@@ -72,11 +82,45 @@ const LoginForm = () => {
     return error;
   };
 
-  // const onSubmit = async (data: ILoginFormValues) => {
-  //   try {
-  //     const response = await fetch ("https://api-training.hrm.div4.pgtest.co/api/v1/login?username=huydoduc&password=huy123456&company_id=1")
-  //   }
-  // }
+  const onFinish = (values: any) => {
+    console.log("Success:", values);
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log("Failed:", errorInfo);
+  };
+
+  const onSubmit = async (data: ILoginFormValues) => {
+    try {
+      const response = await fetch(
+        "https://api-training.hrm.div4.pgtest.co/api/v1/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: data.username,
+            password: data.password,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        // Do something with the response data
+      } else {
+        console.error(
+          "Error calling API: ",
+          response.status,
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error calling API: ", error);
+    }
+  };
 
   return (
     <div
@@ -87,8 +131,8 @@ const LoginForm = () => {
         padding: "24px",
       }}
     >
-      <form
-        // onSubmit={handleSubmit(onSubmit)}
+      {/* <form
+        onSubmit={handleSubmit(onSubmit)}
         className="form"
         style={{
           display: "flex",
@@ -96,8 +140,8 @@ const LoginForm = () => {
           gap: "10px",
           alignItems: "center",
         }}
-      >
-        <div>
+      > */}
+      {/* <div>
           <div style={{ display: "flex", marginBottom: "12px" }}>
             Username :
           </div>
@@ -116,8 +160,8 @@ const LoginForm = () => {
           {errors.username && (
             <small className="text-danger">{errors.username.message}</small>
           )}
-        </div>
-        <div style={{ marginTop: "20px" }}>
+        </div> */}
+      {/* <div style={{ marginTop: "20px" }}>
           <div style={{ display: "flex", marginBottom: "12px" }}>
             Password :
           </div>
@@ -138,23 +182,77 @@ const LoginForm = () => {
           {errors.password && (
             <small className="text-danger">{errors.password.message}</small>
           )}
-        </div>
+        </div> */}
+
+      <Form
+        name="basic"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+      >
+        <Form.Item
+          label="Username"
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: "Please input your username!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: "Please input your password!",
+            },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
         <div>
-          <div
-            style={{ display: "flex", width: "296px", marginBottom: "12px" }}
+          {/* <div
+            style={{
+              display: "flex",
+              width: "296px",
+              marginBottom: "12px",
+            }}
           >
             Factory
-          </div>
-          <Space wrap>
-            <Select
-              placeholder="Select Factory"
-              style={{ width: "100%", fontWeight: 500, color: "#687076" }}
-              options={company.map((option) => ({
-                value: option.id,
-                label: option.name,
-              }))}
-            />
-          </Space>
+          </div> */}
+          <Form.Item label="Factory">
+            <Space.Compact>
+              <Form.Item
+                name="factory"
+                noStyle
+                rules={[
+                  { required: true, message: "Please" },
+                ]}
+              >
+                <Select
+                  placeholder="Select Factory"
+                  style={{
+                    width: "100%",
+                    fontWeight: 500,
+                    color: "#687076",
+                  }}
+                  options={company.map((option) => ({
+                    value: option.id,
+                    label: option.name,
+                  }))}
+                />
+              </Form.Item>
+            </Space.Compact>
+          </Form.Item>
         </div>
         <div
           style={{
@@ -162,14 +260,14 @@ const LoginForm = () => {
             flexDirection: "column",
             marginTop: "8px",
             marginBottom: "8px",
-            width: "300px",
+            width: "100%",
           }}
         >
           <Button
             style={{ margin: "8px 0 0 0" }}
             size="large"
             type="primary"
-            // htmlType="submit"
+            htmlType="submit"
             // loading={loadings[0]}
             onClick={() => enterLoading(0)}
           >
@@ -183,11 +281,14 @@ const LoginForm = () => {
             }}
           >
             <Link to="/reset-password">
-              <button className="btn_fg">Forgot Your Password?</button>
+              <button className="btn_fg">
+                Forgot Your Password?
+              </button>
             </Link>
           </div>
         </div>
-      </form>
+      </Form>
+      {/* </form> */}
     </div>
   );
 };

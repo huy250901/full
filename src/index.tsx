@@ -12,25 +12,6 @@ import LoginForm from "./components/LoginForm";
 import { ILoginParams } from "./models/auth";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
 
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: (
-//       <LoginForm
-//         onLogin={function (values: ILoginParams): void {
-//           throw new Error("Function not implemented.");
-//         }}
-//         loadingg={false}
-//         errorMessage={""}
-//       />
-//     ),
-//   },
-//   {
-//     path: "/reset-password",
-//     element: <ForgotPasswordForm />,
-//   },
-// ]);
-
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );

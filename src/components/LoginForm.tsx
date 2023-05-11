@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Form, Input, Select, notification, Space } from "antd";
-import { Link, useNavigate, NavLink, Navigate } from "react-router-dom";
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  notification,
+  Space,
+} from "antd";
+import {
+  Link,
+  useNavigate,
+  NavLink,
+  Navigate,
+} from "react-router-dom";
 import Cookies from "js-cookie";
 
 import "./loginform.css";
@@ -10,7 +22,9 @@ const LoginForm = () => {
   const [company, setCompany] = useState<Array<any>>([]);
 
   useEffect(() => {
-    fetch("https://api-training.hrm.div4.pgtest.co/api/v1/company")
+    fetch(
+      "https://api-training.hrm.div4.pgtest.co/api/v1/company"
+    )
       .then((response) => response.json())
       .then((data) => {
         setCompany(data.data);
@@ -36,7 +50,9 @@ const LoginForm = () => {
     let error;
     if (!value) {
       error = "Vui lòng nhập email";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)) {
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,}$/i.test(value)
+    ) {
       error = "Email không hợp lệ";
     }
     return error;
@@ -94,9 +110,9 @@ const LoginForm = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
+  // const onFinishFailed = (errorInfo: any) => {
+  //   console.log("Failed:", errorInfo);
+  // };
 
   return (
     <div
@@ -120,7 +136,7 @@ const LoginForm = () => {
         }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item
@@ -129,7 +145,7 @@ const LoginForm = () => {
           rules={[
             {
               required: true,
-              message: "Please input your username!",
+              message: "Please enter username",
             },
           ]}
         >
@@ -142,7 +158,7 @@ const LoginForm = () => {
           rules={[
             {
               required: true,
-              message: "Please input your password!",
+              message: "Please enter password",
             },
           ]}
         >
@@ -154,7 +170,12 @@ const LoginForm = () => {
               <Form.Item
                 name="factory"
                 noStyle
-                rules={[{ required: true, message: "Please" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please choose factory",
+                  },
+                ]}
               >
                 <Select
                   placeholder="Select Factory"
@@ -199,7 +220,9 @@ const LoginForm = () => {
             }}
           >
             <Link to="/reset-password">
-              <button className="btn_fg">Forgot Your Password?</button>
+              <button className="btn_fg">
+                Forgot Your Password?
+              </button>
             </Link>
           </div>
         </div>
